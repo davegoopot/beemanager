@@ -23,7 +23,7 @@ class Burster():
         for _ in range(num_pics):
             filename = self._make_filename()
             self.take_picture(os.path.join(self._pics_folder, filename))
-            sleep(0.25)
+            sleep(0.1)
 
         self._camera.close()
 
