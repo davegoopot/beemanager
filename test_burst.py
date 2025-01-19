@@ -17,10 +17,19 @@ def test_givenImageCountOne_takeOnePicture():
     assert dummy_camera.picture_filenames[0].split("_")[1] == datetime.now().strftime("%Y%m%d")
 
 
+def test_givenImageCountThree_takeThreePictures():
+    dummy_camera = DummyCamera()
+    burster = Burster(dummy_camera, pics_folder="pics")
+    burster.take_pictures(num_pics = 3)
+    assert dummy_camera.picture_count == 3
+    assert len(dummy_camera.picture_filenames) == 3
+
+
 
 class DummyCamera:
-    picture_count = 0
-    picture_filenames = []
+    def __init__(self):
+        self.picture_count = 0
+        self.picture_filenames = []
 
     def capture_file(self, filename):
         self.picture_count += 1
