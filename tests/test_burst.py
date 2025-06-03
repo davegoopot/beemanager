@@ -2,6 +2,8 @@
     pytest file for developing the photo burst functions.
 """
 import os
+import sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from burst import Burster
 from datetime import datetime
 
