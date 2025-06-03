@@ -1,5 +1,6 @@
 LICENSE
 README.md
+burst.py
 pyproject.toml
 burst.egg-info/PKG-INFO
 burst.egg-info/SOURCES.txt
