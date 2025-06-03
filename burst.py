@@ -18,6 +18,7 @@ class Burster():
         if not self._camera:
             if picamera2 is None:
                 raise ImportError("picamera2 is not available. Please install it or provide a camera object.")
+
             self._camera = picamera2.Picamera2()
             still_config = self._camera.create_still_configuration(main={"size": (640, 480)})
             self._camera.configure(still_config)
