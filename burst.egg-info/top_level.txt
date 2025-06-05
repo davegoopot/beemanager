@@ -1,1 +1,4 @@
 burst
+core
+django_project
+manage
