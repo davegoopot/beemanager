@@ -1,12 +1,20 @@
 [project]
 name = "burst"
 version = "0.1.0"
-description = "Add your description here"
+description = "Bee management tools with Django web interface"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "django>=4.2",
 ]
+
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["django_project", "core"]
+py-modules = ["burst", "manage"]
 
 [dependency-groups]
 dev = [
