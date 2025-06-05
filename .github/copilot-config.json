@@ -1,18 +1,18 @@
 {
   "instructions": "copilot-instructions.md",
-  "project_type": "python",
-  "frameworks": ["django", "pytest", "picamera2"],
-  "package_manager": "uv",
-  "target_deployment": "raspberry_pi",
-  "domain": "beekeeping_management",
-  "coding_style": "pep8",
-  "python_version": "3.13+",
+  "project_type": "",
+  "frameworks": [],
+  "package_manager": "",
+  "target_deployment": "",
+  "domain": "",
+  "coding_style": "",
+  "python_version": "",
   "preferences": {
-    "testing_framework": "pytest",
-    "database": "django_dummy",
-    "imports": "explicit",
-    "documentation": "docstrings_preferred",
-    "file_naming": "timestamp_based",
-    "ui_theme": "bee_themed"
+    "testing_framework": "",
+    "database": "",
+    "imports": "",
+    "documentation": "",
+    "file_naming": "",
+    "ui_theme": ""
   }
 }
