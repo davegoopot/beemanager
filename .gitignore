@@ -1,3 +1,8 @@
 *.jpg
 __pycache__
 .pytest_cache
+pics/
+my_pics/
+build/
+dist/
+*.egg-info/
