@@ -1,9 +1,16 @@
 from django.http import HttpResponse
 
 
-def hello_world(request):
-    """A simple Hello World view for bee management."""
-    html_content = """
+def home_page(request):
+    """Display a list of hives for the beekeeper."""
+    # Sample hive data - in a real application this would come from the database
+    hives = [
+        {"id": 1, "name": "Hive Alpha", "status": "Active"},
+        {"id": 2, "name": "Hive Beta", "status": "Active"},
+        {"id": 3, "name": "Hive Gamma", "status": "Active"},
+    ]
+    
+    html_content = f"""
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -11,36 +18,49 @@ def hello_world(request):
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Bee Manager</title>
         <style>
-            body {
+            body {{
                 font-family: Arial, sans-serif;
                 max-width: 800px;
                 margin: 0 auto;
                 padding: 20px;
                 background-color: #fff3cd;
-            }
-            .container {
+            }}
+            .container {{
                 background-color: white;
                 padding: 30px;
                 border-radius: 10px;
                 box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            }
-            h1 {
+            }}
+            h1 {{
                 color: #856404;
                 text-align: center;
-            }
-            .bee-emoji {
+            }}
+            .bee-emoji {{
                 font-size: 2em;
                 text-align: center;
                 margin: 20px 0;
-            }
+            }}
+            .hive-list {{
+                margin: 20px 0;
+            }}
+            .hive-item {{
+                padding: 10px;
+                margin: 10px 0;
+                border: 1px solid #dee2e6;
+                border-radius: 5px;
+                background-color: #f8f9fa;
+            }}
         </style>
     </head>
     <body>
         <div class="container">
-            <h1>🐝 Welcome to Bee Manager 🐝</h1>
+            <h1>🐝 Bee Manager 🐝</h1>
             <div class="bee-emoji">🍯🐝🌻</div>
-            <p>Hello World! This is a simple Django application for managing bee hives.</p>
-            <p>The bee management system is now running and ready to help you monitor your hives!</p>
+            <h2>Hive List</h2>
+            <div class="hive-list">
+                {''.join(f'<div class="hive-item"><strong>{hive["name"]}</strong> - Status: {hive["status"]}</div>' for hive in hives)}
+            </div>
+            <p>Total hives: {len(hives)}</p>
         </div>
     </body>
     </html>
