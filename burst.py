@@ -5,13 +5,19 @@
 
 from datetime import datetime
 import os
-import picamera2
 from time import sleep
+
+try:
+    import picamera2
+except ImportError:
+    picamera2 = None
 
 class Burster():
     def __init__(self, camera = None, pics_folder = "pics"):
         self._camera = camera
         if not self._camera:
+            if picamera2 is None:
+                raise ImportError("picamera2 is required but not available. Install it with 'pip install picamera2'")
             self._camera = picamera2.Picamera2()
             still_config = self._camera.create_still_configuration(main={"size": (640, 480)})
             self._camera.configure(still_config)
