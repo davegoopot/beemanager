@@ -24,7 +24,6 @@ def test_home_page_shows_three_hives():
     # Count occurrences of hive references - should be exactly 3
     hive_count = content.lower().count("hive")
     assert hive_count >= 3, f"Expected at least 3 hive references, found {hive_count}"
-    print("✓ Home page hive list test passed")
 
 
 def test_home_page_url_shows_hives():
@@ -34,10 +33,8 @@ def test_home_page_url_shows_hives():
     assert response.status_code == 200
     content = response.content.decode()
     assert "hive" in content.lower()
-    print("✓ Home page URL hive list test passed")
 
 
 if __name__ == "__main__":
     test_home_page_shows_three_hives()
     test_home_page_url_shows_hives()
-    print("All hive list tests passed!")
