@@ -10,6 +10,10 @@ def home_page(request):
         {"id": 3, "name": "Hive 3", "status": "Active"},
     ]
     
+    hive_html = ""
+    for hive in hives:
+        hive_html += f'<div class="hive-item"><strong>{hive["name"]}</strong> - Status: {hive["status"]}</div>'
+    
     html_content = f"""
     <!DOCTYPE html>
     <html lang="en">
@@ -58,7 +62,7 @@ def home_page(request):
             <div class="bee-emoji">🍯🐝🌻</div>
             <h2>Hive List</h2>
             <div class="hive-list">
-                {''.join(f'<div class="hive-item"><strong>{hive["name"]}</strong> - Status: {hive["status"]}</div>' for hive in hives)}
+                {hive_html}
             </div>
             <p>Total hives: {len(hives)}</p>
         </div>

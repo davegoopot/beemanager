@@ -2,13 +2,9 @@
 Tests for hive list functionality.
 """
 import os
-import sys
 import django
 from django.test import TestCase, Client
 from django.http import HttpRequest
-
-# Add parent directory to path so we can import core
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from core.views import home_page
 
@@ -18,7 +14,6 @@ django.setup()
 
 
 def test_home_page_shows_three_hives():
-    """Test that the home page shows a list of three hives."""
     request = HttpRequest()
     response = home_page(request)
     
@@ -33,7 +28,6 @@ def test_home_page_shows_three_hives():
 
 
 def test_home_page_url_shows_hives():
-    """Test that the home page URL shows hives."""
     client = Client()
     response = client.get('/')
     

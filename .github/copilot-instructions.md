@@ -12,6 +12,6 @@
 3. Use Astral UV tools for managing dependencies and virtual environments. 
   a. For sinlge file scripts use the Astral UV script headers to manage dependencies and python version.
 
-4. Try not to write comments. Instead prefer to write self-documenting code that is clear and easy to understand. If a function is called `test_get_nginx_version_uses_custom_certificate` do not write a comment that says `# Test that get_nginx_version uses custom certificate`. Instead, the function name itself should be clear enough to understand what it does.
+4. Strongly avoid writing comments. Instead prefer to write self-documenting code that is clear and easy to understand. If a function is called `test_get_nginx_version_uses_custom_certificate` do not write a comment that says `# Test that get_nginx_version uses custom certificate`. The function name itself should be clear enough to understand what it does. Comments that duplicate the function or method names are redundant and should not be written. Focus on making code self-explanatory through descriptive naming and clear logic flow.
 
   
