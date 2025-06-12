@@ -5,9 +5,9 @@ def home_page(request):
     """Display a list of hives for the beekeeper."""
     # Sample hive data - in a real application this would come from the database
     hives = [
-        {"id": 1, "name": "Hive Alpha", "status": "Active"},
-        {"id": 2, "name": "Hive Beta", "status": "Active"},
-        {"id": 3, "name": "Hive Gamma", "status": "Active"},
+        {"id": 1, "name": "Hive 1", "status": "Active"},
+        {"id": 2, "name": "Hive 2", "status": "Active"},
+        {"id": 3, "name": "Hive 3", "status": "Active"},
     ]
     
     html_content = f"""
