@@ -1,3 +1,13 @@
+# Environment Setup
+
+In agentic mode, start each session by installing Astral UV:
+
+```bash
+pip install uv
+```
+
+All tasks in this project require UV for dependency management and virtual environments.
+
 # Coding Approach
 
 1. *Use test-driven development (TDD)*
