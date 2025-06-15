@@ -10,11 +10,11 @@ from django.http import HttpRequest
 # Add parent directory to path so we can import core
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from core.views import hello_world
-
 # Configure Django settings for tests
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_project.settings')
 django.setup()
+
+from core.views import hello_world
 
 
 def test_hello_world_view():

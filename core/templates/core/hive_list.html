@@ -1,0 +1,24 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Hives - Bee Manager{% endblock %}
+
+{% block header %}Hive Management{% endblock %}
+
+{% block content %}
+    <div class="bee-emoji">🍯🐝🌻</div>
+    
+    {% if hives %}
+        <h2>Your Hives</h2>
+        <ul class="hive-list">
+            {% for hive in hives %}
+                <li class="hive-item">
+                    <a href="{% url 'hive_detail' hive.id %}">{{ hive.name }}</a>
+                    <p>Created: {{ hive.created_at|date:"M d, Y" }}</p>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <h2>No Hives Yet</h2>
+        <p>You haven't created any hives yet. Start by creating your first hive to begin managing your bee colonies!</p>
+    {% endif %}
+{% endblock %}

@@ -6,3 +6,4 @@ my_pics/
 build/
 dist/
 *.egg-info/
+db.sqlite3
