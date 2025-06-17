@@ -11,6 +11,7 @@ burst.egg-info/requires.txt
 burst.egg-info/top_level.txt
 core/__init__.py
 core/apps.py
+core/models.py
 core/urls.py
 core/views.py
 django_project/__init__.py
