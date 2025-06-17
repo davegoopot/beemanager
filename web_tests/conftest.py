@@ -1,12 +1,10 @@
 """
 Django test configuration for pytest.
 """
-import os
-import django
-from django.conf import settings
-from django.test.utils import get_runner
+import pytest
 
-def pytest_configure():
-    """Configure Django settings for pytest."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_project.settings')
-    django.setup()
+
+@pytest.fixture(scope='session')
+def django_db_setup():
+    """Configure Django database for testing."""
+    pass
