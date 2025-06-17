@@ -27,29 +27,11 @@ All tasks in this project require UV for dependency management and virtual envir
 # Testing with pytest
 
 This project uses [pytest](https://pytest.org/) as the unit testing framework.
-
-## Running Tests
-
-```bash
-uv run pytest                    # Run all tests
-uv run pytest -v               # Verbose output
-uv run pytest tests/test_dummy.py  # Specific file
-uv run pytest tests/test_dummy.py::test_function  # Specific test
-uv run pytest --cov            # With coverage (if available)
-```
+                  # 
 
 ## Test Configuration
 
-The project's pytest configuration is in `pyproject.toml`:
-
-```toml
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-python_files = ["test_*.py", "*_test.py"]
-python_classes = ["Test*"]
-python_functions = ["test_*"]
-addopts = "-v --tb=short"
-```
+The project's pytest configuration is in `pyproject.toml`
 
 ## Writing Tests
 
@@ -72,42 +54,5 @@ def test_burster_takes_correct_number_of_pictures():
     pass
 ```
 
-### Mock Objects for Hardware Dependencies
-For testing components with external dependencies (like camera hardware):
-
-```python
-class DummyCamera:
-    def __init__(self):
-        self.picture_count = 0
-        self.picture_filenames = []
-
-    def capture_file(self, filename):
-        self.picture_count += 1
-        self.picture_filenames.append(filename)
-```
-
-### Error Testing
-Use `pytest.raises` for testing expected exceptions:
-
-```python
-import pytest
-
-def test_function_raises_value_error_for_invalid_input():
-    with pytest.raises(ValueError):
-        function_that_should_raise(invalid_input)
-```
-
-## Best Practices
-
-1. **Write self-documenting test names** - avoid comments when the function name is clear
-2. **One assertion per test** when possible  
-3. **Use meaningful test data** rather than generic values
-4. **Test edge cases** and error conditions
-5. **Keep tests independent** - each test should run in isolation
-6. **Clean up after tests** - ensure tests don't leave behind files or state
-
-## Continuous Integration
-
-Tests run automatically on every push and pull request via GitHub Actions. Hardware-dependent tests (like `test_burst.py`) are excluded from CI/CD but can be run locally with appropriate hardware setup.
 
   
