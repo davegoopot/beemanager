@@ -1,0 +1,28 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ hive.name }} - Bee Manager{% endblock %}
+
+{% block header %}{{ hive.name }}{% endblock %}
+
+{% block content %}
+    <div class="bee-emoji">🐝</div>
+    
+    <p><strong>Created:</strong> {{ hive.created_at|date:"M d, Y" }}</p>
+    
+    <div style="margin: 20px 0;">
+        <a href="{% url 'add_note' hive.id %}" class="btn">Add Note</a>
+        <a href="{% url 'hive_list' %}" class="btn btn-secondary">Back to Hives</a>
+    </div>
+
+    <h2>Notes</h2>
+    {% if notes %}
+        {% for note in notes %}
+            <div class="note">
+                <div class="note-date">{{ note.created_at|date:"M d, Y - g:i A" }}</div>
+                <p class="note-text">{{ note.note_text|linebreaks }}</p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No notes yet. Add your first note to start tracking this hive's progress!</p>
+    {% endif %}
+{% endblock %}

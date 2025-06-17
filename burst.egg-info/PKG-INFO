@@ -101,9 +101,12 @@ uv run python manage.py runserver
 
 # Or run on a specific port
 uv run python manage.py runserver 0.0.0.0:8000
+
+# Or use the convenience script to run on bee-themed port 8335
+. serve.bash
 ```
 
-The web interface will be available at http://localhost:8000 and displays a bee-themed hello world page.
+The web interface will be available at http://localhost:8000 (or http://localhost:8335 when using `serve.bash`) and displays a bee-themed hello world page.
 
 ### Django Features
 

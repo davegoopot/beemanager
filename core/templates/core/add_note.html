@@ -1,0 +1,26 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Add Note - {{ hive.name }} - Bee Manager{% endblock %}
+
+{% block header %}Add Note to {{ hive.name }}{% endblock %}
+
+{% block content %}
+    <div class="bee-emoji">📝🐝</div>
+    
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="note_text">Note:</label>
+            <textarea name="note_text" id="note_text" rows="5" placeholder="Enter your note about this hive..." required></textarea>
+        </div>
+        
+        <div>
+            <button type="submit" class="btn">Save Note</button>
+            <a href="{% url 'hive_detail' hive.id %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+    
+    <p style="margin-top: 20px; color: #6c757d; font-size: 0.9em;">
+        Note will be automatically dated and saved to {{ hive.name }}.
+    </p>
+{% endblock %}

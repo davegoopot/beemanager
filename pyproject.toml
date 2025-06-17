@@ -19,11 +19,13 @@ py-modules = ["burst", "manage"]
 [dependency-groups]
 dev = [
     "pytest>=8.3.4",
+    "pytest-django>=4.11.1",
 ]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["tests", "web_tests"]
 python_files = ["test_*.py", "*_test.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 addopts = "-v --tb=short"
+DJANGO_SETTINGS_MODULE = "django_project.settings"
