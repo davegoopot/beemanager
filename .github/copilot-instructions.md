@@ -16,6 +16,8 @@ All tasks in this project require UV for dependency management and virtual envir
   c. Write the minimum code necessary to pass the test.
   d. Run the tests again to ensure all tests pass.
   e. Refactor the code if necessary, ensuring that all tests still pass.
+  
+  For detailed testing instructions and pytest usage, see [TESTING.md](.github/TESTING.md).
 
 2. Prefer using Python at the latest supported version.
 
