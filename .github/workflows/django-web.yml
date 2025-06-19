@@ -18,24 +18,28 @@ jobs:
       with:
         python-version: 3.13
     
-    - name: Install dependencies
+    - name: Install UV
       run: |
         python -m pip install --upgrade pip
-        pip install django>=4.2
+        pip install uv
+        
+    - name: Install dependencies
+      run: |
+        uv sync
     
     - name: Run Django migrations (check)
       run: |
-        python manage.py check --deploy
+        uv run python manage.py check --deploy
     
-    - name: Run web tests
+    - name: Run web tests  
       run: |
-        python web_tests/test_django_hello.py
+        uv run pytest web_tests/
     
     - name: Test Django server startup
       run: |
-        timeout 10s python manage.py runserver --noreload || true
+        timeout 10s uv run python manage.py runserver --noreload || true
         echo "Django server startup test completed"
     
     - name: Run Django system checks
       run: |
-        python manage.py check
+        uv run python manage.py check
