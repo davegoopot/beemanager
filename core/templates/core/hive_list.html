@@ -7,6 +7,10 @@
 {% block content %}
     <div class="bee-emoji">🍯🐝🌻</div>
     
+    <div style="margin: 20px 0;">
+        <a href="{% url 'create_hive' %}" class="btn">Create Hive</a>
+    </div>
+    
     {% if hives %}
         <h2>Your Hives</h2>
         <ul class="hive-list">
