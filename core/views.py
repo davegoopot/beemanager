@@ -79,3 +79,17 @@ def add_note(request, hive_id):
             messages.error(request, 'Note text cannot be empty')
     
     return render(request, 'core/add_note.html', {'hive': hive})
+
+
+def create_hive(request):
+    """Create a new hive."""
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        if name:
+            hive = Hive.objects.create(name=name)
+            messages.success(request, f'Hive "{hive.name}" created successfully')
+            return redirect('hive_list')
+        else:
+            messages.error(request, 'Hive name cannot be empty')
+    
+    return render(request, 'core/create_hive.html')

@@ -80,6 +80,59 @@ def test_add_note_post(client, sample_hives):
 
 
 @pytest.mark.django_db
+def test_hive_list_contains_create_hive_button(client):
+    """Test that the hive list page contains a Create Hive button."""
+    response = client.get('/hives/')
+    
+    assert response.status_code == 200
+    content = response.content.decode()
+    assert "Create Hive" in content
+
+
+@pytest.mark.django_db
+def test_create_hive_get(client):
+    """Test that the create hive form displays correctly."""
+    response = client.get('/hives/create/')
+    
+    assert response.status_code == 200
+    content = response.content.decode()
+    assert "Create Hive" in content
+    assert 'name="name"' in content
+
+
+@pytest.mark.django_db
+def test_create_hive_post(client):
+    """Test that posting a new hive works and redirects."""
+    response = client.post('/hives/create/', {
+        'name': 'New Test Hive'
+    })
+    
+    # Should redirect back to hive list
+    assert response.status_code == 302
+    
+    # Check that the hive was created
+    hive = Hive.objects.filter(name='New Test Hive').first()
+    assert hive is not None
+    assert hive.name == 'New Test Hive'
+
+
+@pytest.mark.django_db
+def test_create_hive_post_empty_name(client):
+    """Test that posting an empty hive name shows error."""
+    response = client.post('/hives/create/', {
+        'name': ''
+    })
+    
+    # Should stay on the same page (200) with error message
+    assert response.status_code == 200
+    content = response.content.decode()
+    assert 'Hive name cannot be empty' in content
+    
+    # Check that no hive was created
+    assert Hive.objects.count() == 0
+
+
+@pytest.mark.django_db
 def test_hive_not_found(client):
     """Test that accessing a non-existent hive returns 404."""
     response = client.get('/hives/999/')

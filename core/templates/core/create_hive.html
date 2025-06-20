@@ -1,0 +1,26 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Create Hive - Bee Manager{% endblock %}
+
+{% block header %}Create Hive{% endblock %}
+
+{% block content %}
+    <div class="bee-emoji">🏠🐝</div>
+    
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="name">Hive Name:</label>
+            <input type="text" name="name" id="name" placeholder="Enter hive name..." required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-family: inherit;">
+        </div>
+        
+        <div>
+            <button type="submit" class="btn">Create Hive</button>
+            <a href="{% url 'hive_list' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+    
+    <p style="margin-top: 20px; color: #6c757d; font-size: 0.9em;">
+        Hive will be automatically dated and ready for management.
+    </p>
+{% endblock %}
