@@ -1,0 +1,15 @@
+name: Deploy to Ubuntu Server
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy-ubuntu-server:
+    runs-on: ubuntu-server
+    
+    steps:
+    - name: Deploy latest code
+      run: |
+        cd ~/beemanager
+        git pull origin main

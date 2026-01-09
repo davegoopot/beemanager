@@ -26,6 +26,51 @@ Tools for managing bee hives
 
 ## Building and Deployment
 
+### Setting Up GitHub Self-Hosted Runner
+
+To enable automatic deployment on commits to the main branch, you need to set up a self-hosted GitHub Actions runner on your server:
+
+1. **Navigate to your repository settings** on GitHub:
+   - Go to `Settings` → `Actions` → `Runners`
+   - Click `New self-hosted runner`
+
+2. **Select your operating system** (Linux) and architecture
+
+3. **Follow the installation instructions** provided by GitHub. On your Ubuntu server, run:
+   ```bash
+   # Create a folder for the runner
+   mkdir actions-runner && cd actions-runner
+   
+   # Download the latest runner package
+   curl -o actions-runner-linux-x64-X.X.X.tar.gz -L https://github.com/actions/runner/releases/download/vX.X.X/actions-runner-linux-x64-X.X.X.tar.gz
+   
+   # Extract the installer
+   tar xzf ./actions-runner-linux-x64-X.X.X.tar.gz
+   ```
+
+4. **Configure the runner**:
+   ```bash
+   # Create the runner and start the configuration
+   ./config.sh --url https://github.com/davegoopot/beemanager --token YOUR_TOKEN
+   
+   # When prompted for runner name, enter: ubuntu-server
+   # When prompted for labels, add: ubuntu-server
+   ```
+
+5. **Install the runner as a service** (recommended for automatic restarts):
+   ```bash
+   sudo ./svc.sh install
+   sudo ./svc.sh start
+   ```
+
+6. **Clone the repository** to the home directory if not already present:
+   ```bash
+   cd ~
+   git clone https://github.com/davegoopot/beemanager.git
+   ```
+
+Once configured, the runner will automatically pull the latest code from the main branch whenever new commits are pushed.
+
 ### Building the Project
 
 Create a source distribution and wheel for deployment:
