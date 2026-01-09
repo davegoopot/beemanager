@@ -42,6 +42,8 @@ To enable automatic deployment on commits to the main branch, you need to set up
    mkdir actions-runner && cd actions-runner
    
    # Download the latest runner package
+   # Check https://github.com/actions/runner/releases for the latest version
+   # Replace X.X.X with the actual version number (e.g., 2.311.0)
    curl -o actions-runner-linux-x64-X.X.X.tar.gz -L https://github.com/actions/runner/releases/download/vX.X.X/actions-runner-linux-x64-X.X.X.tar.gz
    
    # Extract the installer

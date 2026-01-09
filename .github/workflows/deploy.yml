@@ -11,5 +11,12 @@ jobs:
     steps:
     - name: Deploy latest code
       run: |
+        set -e
+        if [ ! -d ~/beemanager ]; then
+          echo "Error: ~/beemanager directory not found"
+          exit 1
+        fi
         cd ~/beemanager
+        echo "Pulling latest code from main branch..."
         git pull origin main
+        echo "Deployment completed successfully"
