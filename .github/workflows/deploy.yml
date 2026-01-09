@@ -7,6 +7,8 @@ on:
 jobs:
   deploy-ubuntu-server:
     runs-on: ubuntu-server
+    permissions:
+      contents: read
     
     steps:
     - name: Deploy latest code
