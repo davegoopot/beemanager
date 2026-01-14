@@ -26,17 +26,27 @@ Tools for managing bee hives
 
 ## Building and Deployment
 
-### Setting Up GitHub Self-Hosted Runner
+### Setting Up Automatic Deployment
 
-To enable automatic deployment on commits to the main branch, you need to set up a self-hosted GitHub Actions runner on your server:
+For security reasons, automatic deployment is not configured in this public repository. Instead, deployment should be set up in a **private repository** using a self-hosted GitHub Actions runner.
 
-1. **Navigate to your repository settings** on GitHub:
+#### Security Note
+
+Self-hosted runners should **never** be used with public repositories, as they can execute arbitrary code from pull requests, creating a significant security risk. Always use self-hosted runners only with private repositories.
+
+#### Deployment Setup (Private Repository Only)
+
+To enable automatic deployment on commits to the main branch:
+
+1. **Create a private repository** for deployment automation (e.g., `beemanager-deploy`)
+
+2. **Set up a GitHub self-hosted runner** on your server:
+   - Navigate to your **private** repository settings on GitHub
    - Go to `Settings` → `Actions` → `Runners`
    - Click `New self-hosted runner`
+   - Select Linux as your operating system
 
-2. **Select your operating system** (Linux) and architecture
-
-3. **Follow the installation instructions** provided by GitHub. On your Ubuntu server, run:
+3. **Install the runner** on your Ubuntu server:
    ```bash
    # Create a folder for the runner
    mkdir actions-runner && cd actions-runner
@@ -50,10 +60,10 @@ To enable automatic deployment on commits to the main branch, you need to set up
    tar xzf ./actions-runner-linux-x64-X.X.X.tar.gz
    ```
 
-4. **Configure the runner**:
+4. **Configure the runner** (pointing to your **private** repository):
    ```bash
    # Create the runner and start the configuration
-   ./config.sh --url https://github.com/davegoopot/beemanager --token YOUR_TOKEN
+   ./config.sh --url https://github.com/yourusername/your-private-deploy-repo --token YOUR_TOKEN
    
    # When prompted for runner name, enter: ubuntu-server
    # When prompted for labels, add: ubuntu-server
@@ -65,13 +75,15 @@ To enable automatic deployment on commits to the main branch, you need to set up
    sudo ./svc.sh start
    ```
 
-6. **Clone the repository** to the home directory if not already present:
+6. **Clone this repository** to the home directory if not already present:
    ```bash
    cd ~
    git clone https://github.com/davegoopot/beemanager.git
    ```
 
-Once configured, the runner will automatically pull the latest code from the main branch whenever new commits are pushed.
+7. **Create a deployment workflow** in your private repository that monitors this public repo and deploys changes to your server when the main branch is updated.
+
+Once configured, the private repository's workflow will automatically pull the latest code from this public repository to your server.
 
 ### Building the Project
 
