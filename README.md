@@ -63,7 +63,7 @@ To enable automatic deployment on commits to the main branch:
 4. **Configure the runner** (pointing to your **private** repository):
    ```bash
    # Create the runner and start the configuration
-   ./config.sh --url https://github.com/yourusername/your-private-deploy-repo --token YOUR_TOKEN
+   ./config.sh --url https://github.com/YOUR_USERNAME/YOUR_PRIVATE_DEPLOY_REPO --token YOUR_TOKEN
    
    # When prompted for runner name, enter: ubuntu-server
    # When prompted for labels, add: ubuntu-server
@@ -81,7 +81,33 @@ To enable automatic deployment on commits to the main branch:
    git clone https://github.com/davegoopot/beemanager.git
    ```
 
-7. **Create a deployment workflow** in your private repository that monitors this public repo and deploys changes to your server when the main branch is updated.
+7. **Create a deployment workflow** in your private repository that monitors this public repo and deploys changes to your server when the main branch is updated. Example workflow for your private repository:
+   ```yaml
+   name: Deploy to Ubuntu Server
+   
+   on:
+     schedule:
+       - cron: '*/15 * * * *'  # Check every 15 minutes
+     workflow_dispatch:  # Allow manual trigger
+   
+   jobs:
+     deploy-ubuntu-server:
+       runs-on: ubuntu-server
+       permissions:
+         contents: read
+       steps:
+       - name: Deploy latest code
+         run: |
+           set -e
+           if [ ! -d ~/beemanager ]; then
+             echo "Error: ~/beemanager directory not found"
+             exit 1
+           fi
+           cd ~/beemanager
+           echo "Pulling latest code from main branch..."
+           git pull origin main
+           echo "Deployment completed successfully"
+   ```
 
 Once configured, the private repository's workflow will automatically pull the latest code from this public repository to your server.
 
