@@ -1,17 +1,17 @@
 name: Deploy to Private Repo
 env:
-  GITHUB_TOKEN:   ${{ secrets.DEPLOY_TOKEN }}
+  GITHUB_TOKEN:  ${{ secrets.DEPLOY_TOKEN }}
 
 on:
   workflow_dispatch: 
-  push:
+  push: 
     branches: [ main ]
 
 jobs:
   deploy: 
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
+    - name:  Checkout code
       uses: actions/checkout@v2
 
     - name: Debug - Check token presence
@@ -20,26 +20,31 @@ jobs:
           echo "ERROR: GITHUB_TOKEN is empty or not set"
           exit 1
         else
-          echo "GITHUB_TOKEN is set (length: ${#GITHUB_TOKEN})"
+          echo "GITHUB_TOKEN is set (length:  ${#GITHUB_TOKEN})"
         fi
 
-    - name: Debug - Test authentication
-      run: |
+    - name:  Debug - Test authentication
+      run:  |
         echo "Testing authentication to target repo..."
-        curl -H "Authorization: token ${GITHUB_TOKEN}" \
-             -H "Accept: application/vnd. github.v3+json" \
-             https://api.github.com/repos/davegoopot/beemanager-deploy
+        response=$(curl -s -w "\n%{http_code}" \
+             -H "Authorization: token ${GITHUB_TOKEN}" \
+             -H "Accept: application/vnd.github.v3+json" \
+             https://api.github.com/repos/davegoopot/beemanager-deploy)
+        http_code=$(echo "$response" | tail -n1)
+        body=$(echo "$response" | sed '$d')
+        echo "HTTP Status: $http_code"
+        echo "Response: $body"
 
     - name: Debug - List accessible repos
       run: |
         echo "Checking repos accessible with this token..."
-        curl -H "Authorization: token ${GITHUB_TOKEN}" \
-             -H "Accept: application/vnd. github.v3+json" \
-             https://api.github.com/user/repos | jq -r '.[].full_name' | grep -i beemanager || echo "No beemanager repos found"
+        curl -s -H "Authorization: token ${GITHUB_TOKEN}" \
+             -H "Accept: application/vnd.github.v3+json" \
+             https://api.github.com/user/repos | jq -r 'if type=="array" then .[].full_name else .  end' | grep -i beemanager || echo "No beemanager repos found"
 
     - name: Push to Private Repo
       run:  |
         git config --global user.name "GitHub Actions"
-        git config --global user.email "actions@github. com"
+        git config --global user.email "actions@github.com"
         git remote add private-repo https://x-access-token:${GITHUB_TOKEN}@github.com/davegoopot/beemanager-deploy.git
-        git push private-repo main:main
+        git push private-repo main: main
