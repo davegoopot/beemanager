@@ -26,6 +26,91 @@ Tools for managing bee hives
 
 ## Building and Deployment
 
+### Setting Up Automatic Deployment
+
+For security reasons, automatic deployment is not configured in this public repository. Instead, deployment should be set up in a **private repository** using a self-hosted GitHub Actions runner.
+
+#### Security Note
+
+Self-hosted runners should **never** be used with public repositories, as they can execute arbitrary code from pull requests, creating a significant security risk. Always use self-hosted runners only with private repositories.
+
+#### Deployment Setup (Private Repository Only)
+
+To enable automatic deployment on commits to the main branch:
+
+1. **Create a private repository** for deployment automation (e.g., `beemanager-deploy`)
+
+2. **Set up a GitHub self-hosted runner** on your server:
+   - Navigate to your **private** repository settings on GitHub
+   - Go to `Settings` → `Actions` → `Runners`
+   - Click `New self-hosted runner`
+   - Select Linux as your operating system
+
+3. **Install the runner** on your Ubuntu server:
+   ```bash
+   # Create a folder for the runner
+   mkdir actions-runner && cd actions-runner
+   
+   # Download the latest runner package
+   # Check https://github.com/actions/runner/releases for the latest version
+   # Replace X.X.X with the actual version number (e.g., 2.311.0)
+   curl -o actions-runner-linux-x64-X.X.X.tar.gz -L https://github.com/actions/runner/releases/download/vX.X.X/actions-runner-linux-x64-X.X.X.tar.gz
+   
+   # Extract the installer
+   tar xzf ./actions-runner-linux-x64-X.X.X.tar.gz
+   ```
+
+4. **Configure the runner** (pointing to your **private** repository):
+   ```bash
+   # Create the runner and start the configuration
+   ./config.sh --url https://github.com/YOUR_USERNAME/YOUR_PRIVATE_DEPLOY_REPO --token YOUR_TOKEN
+   
+   # When prompted for runner name, enter: ubuntu-server
+   # When prompted for labels, add: ubuntu-server
+   ```
+
+5. **Install the runner as a service** (recommended for automatic restarts):
+   ```bash
+   sudo ./svc.sh install
+   sudo ./svc.sh start
+   ```
+
+6. **Clone this repository** to the home directory if not already present:
+   ```bash
+   cd ~
+   git clone https://github.com/davegoopot/beemanager.git
+   ```
+
+7. **Create a deployment workflow** in your private repository that monitors this public repo and deploys changes to your server when the main branch is updated. Example workflow for your private repository:
+   ```yaml
+   name: Deploy to Ubuntu Server
+   
+   on:
+     schedule:
+       - cron: '*/15 * * * *'  # Check every 15 minutes
+     workflow_dispatch:  # Allow manual trigger
+   
+   jobs:
+     deploy-ubuntu-server:
+       runs-on: ubuntu-server
+       permissions:
+         contents: read
+       steps:
+       - name: Deploy latest code
+         run: |
+           set -e
+           if [ ! -d ~/beemanager ]; then
+             echo "Error: ~/beemanager directory not found"
+             exit 1
+           fi
+           cd ~/beemanager
+           echo "Pulling latest code from main branch..."
+           git pull origin main
+           echo "Deployment completed successfully"
+   ```
+
+Once configured, the private repository's workflow will automatically pull the latest code from this public repository to your server.
+
 ### Building the Project
 
 Create a source distribution and wheel for deployment:
