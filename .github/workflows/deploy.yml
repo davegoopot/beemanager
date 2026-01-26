@@ -55,6 +55,7 @@ jobs:
           echo "Repository is empty. Initializing with README..."
           
           # Create initial commit with README using GitHub API
+          # Content is base64 encoded: "# beemanager-deploy\n\nThis repository contains deployment files for beemanager."
           curl -X PUT \
             -H "Authorization: token ${GITHUB_TOKEN}" \
             -H "Accept: application/vnd.github.v3+json" \
@@ -66,8 +67,8 @@ jobs:
             }'
           
           echo ""
-          echo "Repository initialized. Waiting a moment for changes to propagate..."
-          sleep 3
+          echo "Repository initialized. Waiting for changes to propagate..."
+          sleep 3  # Allow GitHub to process the commit before git operations
         else
           echo "Repository already has commits. Skipping initialization."
         fi
@@ -84,5 +85,5 @@ jobs:
         echo "Fetching from remote to check existing branches..."
         git fetch private-repo
         
-        echo "Pushing HEAD to main..."
-        git push -f private-repo HEAD:main
+        echo "Pushing HEAD to main (force push to replace any existing content)..."
+        git push --force-with-lease private-repo HEAD:main
