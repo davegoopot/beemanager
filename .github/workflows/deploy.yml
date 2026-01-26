@@ -42,9 +42,48 @@ jobs:
              -H "Accept: application/vnd.github.v3+json" \
              https://api.github.com/user/repos | jq -r 'if type=="array" then .[].full_name else .  end' | grep -i beemanager || echo "No beemanager repos found"
 
+    - name: Initialize target repository if empty
+      run: |
+        echo "=== Checking if target repository needs initialization ==="
+        
+        # Check if repository is empty
+        response=$(curl -s -H "Authorization: token ${GITHUB_TOKEN}" \
+                       -H "Accept: application/vnd.github.v3+json" \
+                       https://api.github.com/repos/davegoopot/beemanager-deploy/git/refs)
+        
+        if echo "$response" | grep -q "Git Repository is empty"; then
+          echo "Repository is empty. Initializing with README..."
+          
+          # Create initial commit with README using GitHub API
+          # Content is base64 encoded: "# beemanager-deploy\n\nThis repository contains deployment files for beemanager."
+          curl -X PUT \
+            -H "Authorization: token ${GITHUB_TOKEN}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/davegoopot/beemanager-deploy/contents/README.md \
+            -d '{
+              "message": "Initial commit",
+              "content": "IyBiZWVtYW5hZ2VyLWRlcGxveQoKVGhpcyByZXBvc2l0b3J5IGNvbnRhaW5zIGRlcGxveW1lbnQgZmlsZXMgZm9yIGJlZW1hbmFnZXIu",
+              "branch": "main"
+            }'
+          
+          echo ""
+          echo "Repository initialized. Waiting for changes to propagate..."
+          sleep 3  # Allow GitHub to process the commit before git operations
+        else
+          echo "Repository already has commits. Skipping initialization."
+        fi
+        
     - name: Push to Private Repo
-      run:  |
+      run: |
+        echo "=== Pushing to Private Repository ==="
         git config --global user.name "GitHub Actions"
         git config --global user.email "actions@github.com"
-        git remote add private-repo https://x-access-token:${GITHUB_TOKEN}@github.com/davegoopot/beemanager-deploy.git
-        git push private-repo main:main
+        
+        echo "Adding remote..."
+        git remote add private-repo https://${GITHUB_TOKEN}@github.com/davegoopot/beemanager-deploy.git
+        
+        echo "Fetching from remote to check existing branches..."
+        git fetch private-repo
+        
+        echo "Pushing HEAD to main (force push to replace any existing content)..."
+        git push --force-with-lease private-repo HEAD:main
