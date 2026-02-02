@@ -79,10 +79,28 @@ jobs:
         git config --global user.name "GitHub Actions"
         git config --global user.email "actions@github.com"
         
-        echo "Adding remote..."
-        git remote add private-repo https://${GITHUB_TOKEN}@github.com/davegoopot/beemanager-deploy.git
+        # Try using git-credential-store to avoid embedding token in URL
+        echo "Setting up git credentials..."
+        git config --global credential.helper store
+        echo "https://${GITHUB_TOKEN}@github.com" > ~/.git-credentials
         
-        echo "Fetching from remote to check existing branches..."
+        echo "Adding remote..."
+        git remote add private-repo https://github.com/davegoopot/beemanager-deploy.git
+        
+        echo "Testing git ls-remote with credentials..."
+        git ls-remote private-repo || {
+          echo "ls-remote failed. Trying with username in URL..."
+          git remote remove private-repo
+          git remote add private-repo https://x-access-token:${GITHUB_TOKEN}@github.com/davegoopot/beemanager-deploy.git
+          git ls-remote private-repo || {
+            echo "Still failing. Trying with token as username..."
+            git remote remove private-repo  
+            git remote add private-repo https://${GITHUB_TOKEN}:x-oauth-basic@github.com/davegoopot/beemanager-deploy.git
+            git ls-remote private-repo
+          }
+        }
+        
+        echo "Fetching from remote..."
         git fetch private-repo
         
         echo "Pushing HEAD to main (force push to replace any existing content)..."
