@@ -99,47 +99,21 @@ jobs:
         git config --global user.name "GitHub Actions"
         git config --global user.email "actions@github.com"
         
-        echo "Using GIT_TOKEN for authentication..."
-        echo "Token type: $(if [ "${GIT_TOKEN}" = "${GITHUB_TOKEN}" ]; then echo "DEPLOY_TOKEN (fallback)"; else echo "temp_clone_token"; fi)"
-        echo "Adding remote and testing authentication formats..."
-        git remote add private-repo https://${GIT_TOKEN}@github.com/davegoopot/beemanager-deploy.git
+        echo "Configuring git credentials..."
+        # Use git credential helper to avoid token exposure issues in URLs
+        git config --global credential.helper '!f() { echo "username=git"; echo "password=${GIT_TOKEN}"; }; f'
         
+        echo "Adding remote repository..."
+        git remote add private-repo https://github.com/davegoopot/beemanager-deploy.git
+        
+        echo "Testing connection with git ls-remote..."
         if git ls-remote private-repo 2>&1; then
-          echo "✓ Authentication successful with format: TOKEN@github.com"
+          echo "✓ Authentication successful!"
         else
-          echo "✗ First format failed. Trying x-access-token format..."
-          git remote remove private-repo
-          git remote add private-repo https://x-access-token:${GIT_TOKEN}@github.com/davegoopot/beemanager-deploy.git
-          
-          if git ls-remote private-repo 2>&1; then
-            echo "✓ Authentication successful with format: x-access-token:TOKEN@github.com"
-          else
-            echo "✗ Second format failed. Trying x-oauth-basic format..."
-            git remote remove private-repo
-            git remote add private-repo https://${GIT_TOKEN}:x-oauth-basic@github.com/davegoopot/beemanager-deploy.git
-            
-            if git ls-remote private-repo 2>&1; then
-              echo "✓ Authentication successful with format: TOKEN:x-oauth-basic@github.com"
-            else
-              echo "✗ All authentication formats failed!"
-              echo ""
-              echo "=== DIAGNOSIS ==="
-              echo "The DEPLOY_TOKEN has API read access but CANNOT access the repository via git protocol."
-              echo "This typically means:"
-              echo "1. The token is a fine-grained PAT without 'Contents' write permission"
-              echo "2. The token doesn't have push access configured for davegoopot/beemanager-deploy"
-              echo "3. The token might be restricted to specific repositories"
-              echo ""
-              echo "=== SOLUTION ==="
-              echo "To fix this issue, you need to either:"
-              echo "1. Update the DEPLOY_TOKEN in repository secrets with a token that has push access to beemanager-deploy"
-              echo "2. Configure a deploy key (SSH) instead of using HTTPS authentication"
-              echo "3. Ensure the token has 'Contents: Read and write' permission for the target repository"
-              echo ""
-              echo "Token permissions can be verified at: https://github.com/settings/tokens"
-              exit 1
-            fi
-          fi
+          echo "✗ Authentication failed!"
+          echo "This is unexpected since the token works locally."
+          echo "Please check the DEPLOY_TOKEN secret is correctly set."
+          exit 1
         fi
         
         echo "Fetching from remote..."
