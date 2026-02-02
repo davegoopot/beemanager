@@ -79,26 +79,33 @@ jobs:
         git config --global user.name "GitHub Actions"
         git config --global user.email "actions@github.com"
         
-        # Try using git-credential-store to avoid embedding token in URL
-        echo "Setting up git credentials..."
-        git config --global credential.helper store
-        echo "https://${GITHUB_TOKEN}@github.com" > ~/.git-credentials
+        echo "Adding remote and testing authentication formats..."
+        git remote add private-repo https://${GITHUB_TOKEN}@github.com/davegoopot/beemanager-deploy.git
         
-        echo "Adding remote..."
-        git remote add private-repo https://github.com/davegoopot/beemanager-deploy.git
-        
-        echo "Testing git ls-remote with credentials..."
-        git ls-remote private-repo || {
-          echo "ls-remote failed. Trying with username in URL..."
+        if git ls-remote private-repo 2>&1; then
+          echo "✓ Authentication successful with format: TOKEN@github.com"
+        else
+          echo "✗ First format failed. Trying x-access-token format..."
           git remote remove private-repo
           git remote add private-repo https://x-access-token:${GITHUB_TOKEN}@github.com/davegoopot/beemanager-deploy.git
-          git ls-remote private-repo || {
-            echo "Still failing. Trying with token as username..."
-            git remote remove private-repo  
+          
+          if git ls-remote private-repo 2>&1; then
+            echo "✓ Authentication successful with format: x-access-token:TOKEN@github.com"
+          else
+            echo "✗ Second format failed. Trying x-oauth-basic format..."
+            git remote remove private-repo
             git remote add private-repo https://${GITHUB_TOKEN}:x-oauth-basic@github.com/davegoopot/beemanager-deploy.git
-            git ls-remote private-repo
-          }
-        }
+            
+            if git ls-remote private-repo 2>&1; then
+              echo "✓ Authentication successful with format: TOKEN:x-oauth-basic@github.com"
+            else
+              echo "✗ All authentication formats failed!"
+              echo "This indicates the token may not have the correct permissions for git operations."
+              echo "Please verify the token has 'repo' scope and access to private repositories."
+              exit 1
+            fi
+          fi
+        fi
         
         echo "Fetching from remote..."
         git fetch private-repo
