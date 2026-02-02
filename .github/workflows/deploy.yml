@@ -26,19 +26,32 @@ jobs:
     - name:  Debug - Test authentication and extract clone token
       run:  |
         echo "Testing authentication to target repo..."
-        response=$(curl -s -H "Authorization: token ${GITHUB_TOKEN}" \
+        response=$(curl -s -w "\n%{http_code}" \
+             -H "Authorization: token ${GITHUB_TOKEN}" \
              -H "Accept: application/vnd.github.v3+json" \
              https://api.github.com/repos/davegoopot/beemanager-deploy)
         
-        echo "HTTP Status: 200 (if we got here)"
+        http_code=$(echo "$response" | tail -n1)
+        body=$(echo "$response" | sed '$d')
+        
+        if [ "$http_code" != "200" ]; then
+          echo "ERROR: API request failed with status $http_code"
+          echo "Response: $body"
+          exit 1
+        fi
+        
+        echo "✓ API authentication successful"
         
         # Extract temp_clone_token if available
-        clone_token=$(echo "$response" | jq -r '.temp_clone_token // empty')
-        if [ -n "$clone_token" ]; then
-          echo "Found temp_clone_token for git operations"
+        clone_token=$(echo "$body" | jq -r '.temp_clone_token // empty' 2>/dev/null)
+        if [ $? -ne 0 ]; then
+          echo "WARNING: Failed to parse JSON response, using DEPLOY_TOKEN"
+          echo "GIT_TOKEN=${GITHUB_TOKEN}" >> $GITHUB_ENV
+        elif [ -n "$clone_token" ]; then
+          echo "✓ Found temp_clone_token for git operations"
           echo "GIT_TOKEN=$clone_token" >> $GITHUB_ENV
         else
-          echo "No temp_clone_token found, will use DEPLOY_TOKEN"
+          echo "No temp_clone_token found, using DEPLOY_TOKEN for git operations"
           echo "GIT_TOKEN=${GITHUB_TOKEN}" >> $GITHUB_ENV
         fi
 
@@ -120,5 +133,3 @@ jobs:
         
         echo "Pushing HEAD to main (force push to replace any existing content)..."
         git push --force-with-lease private-repo HEAD:main
-      env:
-        GIT_TOKEN: ${{ env.GIT_TOKEN }}
