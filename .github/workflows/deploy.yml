@@ -1,6 +1,8 @@
 name: Deploy to Private Repo
 env:
-  GITHUB_TOKEN:  ${{ secrets.DEPLOY_TOKEN }}
+  # TEMPORARY: Hardcoded token for diagnostics - REMOVE AFTER TESTING
+  GITHUB_TOKEN:  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
+  # GITHUB_TOKEN:  ${{ secrets.DEPLOY_TOKEN }}
 
 on:
   workflow_dispatch: 
