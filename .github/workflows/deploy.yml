@@ -42,18 +42,10 @@ jobs:
         
         echo "✓ API authentication successful"
         
-        # Extract temp_clone_token if available
-        clone_token=$(echo "$body" | jq -r '.temp_clone_token // empty' 2>/dev/null)
-        if [ $? -ne 0 ]; then
-          echo "WARNING: Failed to parse JSON response, using DEPLOY_TOKEN"
-          echo "GIT_TOKEN=${GITHUB_TOKEN}" >> $GITHUB_ENV
-        elif [ -n "$clone_token" ]; then
-          echo "✓ Found temp_clone_token for git operations"
-          echo "GIT_TOKEN=$clone_token" >> $GITHUB_ENV
-        else
-          echo "No temp_clone_token found, using DEPLOY_TOKEN for git operations"
-          echo "GIT_TOKEN=${GITHUB_TOKEN}" >> $GITHUB_ENV
-        fi
+        # Use DEPLOY_TOKEN directly for git operations (push requires write access)
+        # Note: temp_clone_token from API is read-only and can't be used for push
+        echo "Using DEPLOY_TOKEN for git operations (push requires write access)"
+        echo "GIT_TOKEN=${GITHUB_TOKEN}" >> $GITHUB_ENV
 
     - name: Debug - List accessible repos
       run: |

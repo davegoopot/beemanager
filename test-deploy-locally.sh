@@ -36,16 +36,15 @@ else
 fi
 echo ""
 
-# Test 2: Extract temp_clone_token
-echo "[2/5] Checking for temp_clone_token..."
+# Test 2: Note about temp_clone_token
+echo "[2/5] Note about temp_clone_token..."
 temp_clone_token=$(echo "$response" | jq -r '.temp_clone_token // empty')
 if [ -n "$temp_clone_token" ]; then
-    echo "✓ Found temp_clone_token: ${temp_clone_token:0:10}..."
-    GIT_TOKEN="$temp_clone_token"
-else
-    echo "  No temp_clone_token found, using GITHUB_TOKEN"
-    GIT_TOKEN="$GITHUB_TOKEN"
+    echo "  Found temp_clone_token: ${temp_clone_token:0:10}..."
+    echo "  Note: temp_clone_token is READ-ONLY and cannot be used for push"
 fi
+echo "  Using GITHUB_TOKEN for git operations (push requires write access)"
+GIT_TOKEN="$GITHUB_TOKEN"
 echo ""
 
 # Test 3: Check if repository is empty
