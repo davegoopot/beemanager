@@ -5,6 +5,17 @@
 
 set -e
 
+# Check for required tools
+if ! command -v jq &> /dev/null; then
+    echo "Error: 'jq' is required but not installed."
+    echo ""
+    echo "Install jq:"
+    echo "  - macOS: brew install jq"
+    echo "  - Ubuntu/Debian: sudo apt-get install jq"
+    echo "  - RHEL/CentOS: sudo yum install jq"
+    exit 1
+fi
+
 if [ -z "$1" ]; then
     echo "Usage: $0 <github-token>"
     echo ""
