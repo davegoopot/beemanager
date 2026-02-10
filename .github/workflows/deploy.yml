@@ -92,22 +92,38 @@ jobs:
         git config --global user.email "actions@github.com"
         
         echo "Configuring git credentials..."
-        # Store credentials in git credential store
+        # IMPORTANT: GitHub Actions masks secrets when they appear in output or command strings
+        # We need to write the credentials without shell expansion to avoid masking
+        # Use printf instead of echo to avoid issues with special characters
         git config --global credential.helper store
-        # Create credentials file with secure permissions first
         install -m 600 /dev/null ~/.git-credentials
-        echo "https://git:${GIT_TOKEN}@github.com" > ~/.git-credentials
+        
+        # Write credentials using printf which doesn't trigger GitHub's secret masking
+        printf "https://git:%s@github.com\n" "${GIT_TOKEN}" > ~/.git-credentials
+        
+        # Diagnostic: Check if credentials file was created (don't cat it as it contains the secret)
+        echo "Credentials file created: $(test -f ~/.git-credentials && echo 'YES' || echo 'NO')"
+        echo "Credentials file size: $(wc -c < ~/.git-credentials) bytes"
+        echo "Expected size should be around 50-60 bytes (token length + URL)"
+        
+        # Diagnostic: Test git credential fill
+        echo "Testing git credential helper..."
+        printf "protocol=https\nhost=github.com\n" | git credential fill | grep -c "password=" || echo "WARNING: Git credential helper may not be configured correctly"
         
         echo "Adding remote repository..."
         git remote add private-repo https://github.com/davegoopot/beemanager-deploy.git
         
         echo "Testing connection with git ls-remote..."
+        echo "Attempting: git ls-remote private-repo"
         if git ls-remote private-repo 2>&1; then
           echo "✓ Authentication successful!"
         else
           echo "✗ Authentication failed!"
-          echo "This is unexpected since the token works locally."
-          echo "Please check the DEPLOY_TOKEN secret is correctly set."
+          echo "Debugging information:"
+          echo "- Token is set in environment: ${GIT_TOKEN:+YES}${GIT_TOKEN:-NO}"
+          echo "- Token length: ${#GIT_TOKEN}"
+          echo "- Git config credential.helper: $(git config --global credential.helper)"
+          echo "- Credentials file exists: $(test -f ~/.git-credentials && echo 'YES' || echo 'NO')"
           exit 1
         fi
         
