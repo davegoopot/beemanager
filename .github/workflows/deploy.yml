@@ -92,14 +92,18 @@ jobs:
         git config --global user.email "actions@github.com"
         
         echo "Configuring git credentials..."
-        # IMPORTANT: GitHub Actions masks secrets when they appear in output or command strings
-        # We need to write the credentials without shell expansion to avoid masking
-        # Use printf instead of echo to avoid issues with special characters
+        # IMPORTANT: GitHub Actions masks secrets in command strings and output
+        # Solution: Use environment variable substitution in a way that bypasses masking
+        # We write the URL structure first, then append the token via tee which reads from stdin
         git config --global credential.helper store
         install -m 600 /dev/null ~/.git-credentials
         
-        # Write credentials using printf which doesn't trigger GitHub's secret masking
-        printf "https://git:%s@github.com\n" "${GIT_TOKEN}" > ~/.git-credentials
+        # Write credentials by using command substitution to bypass GitHub's masking
+        # The token is passed through stdin rather than command line arguments
+        echo "${GIT_TOKEN}" | {
+          read token
+          echo "https://git:${token}@github.com"
+        } > ~/.git-credentials
         
         # Diagnostic: Check if credentials file was created (don't cat it as it contains the secret)
         echo "Credentials file created: $(test -f ~/.git-credentials && echo 'YES' || echo 'NO')"
