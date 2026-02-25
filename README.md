@@ -38,6 +38,104 @@ This creates two files in the `dist/` directory:
 - `burst-0.1.0.tar.gz` (source distribution)
 - `burst-0.1.0-py3-none-any.whl` (wheel)
 
+### Manual Deployment to Private Repository
+
+To manually deploy the built files to the private deployment repository (`davegoopot/beemanager-deploy`):
+
+#### Prerequisites
+
+1. **Create a Personal Access Token (PAT)** with appropriate permissions:
+   - Go to https://github.com/settings/tokens
+   - Click "Generate new token" → "Generate new token (classic)"
+   - Give it a descriptive name like "Deploy to beemanager-deploy"
+   - Set expiration (recommend a long period for automation)
+   - Select the `repo` scope (this includes all repository permissions)
+   - Click "Generate token"
+   - **Copy the token immediately** (it won't be shown again)
+
+2. **Verify token has access** to the deployment repository:
+   ```bash
+   # Test API access
+   curl -H "Authorization: token YOUR_TOKEN" \
+        https://api.github.com/repos/davegoopot/beemanager-deploy
+   
+   # Test git access
+   git ls-remote https://YOUR_TOKEN@github.com/davegoopot/beemanager-deploy.git
+   ```
+
+#### Deployment Steps
+
+1. **Build the project** (if not already done):
+   ```bash
+   uv build
+   ```
+
+2. **Clone the deployment repository** (or use an existing clone):
+   ```bash
+   # First time setup
+   git clone https://YOUR_TOKEN@github.com/davegoopot/beemanager-deploy.git
+   cd beemanager-deploy
+   
+   # Or if already cloned
+   cd beemanager-deploy
+   git pull origin main
+   ```
+
+3. **Copy the built distribution files**:
+   ```bash
+   # From the beemanager repository root
+   cp ../beemanager/dist/* .
+   ```
+
+4. **Commit and push the changes**:
+   ```bash
+   git add *.tar.gz *.whl
+   git commit -m "Deploy beemanager build artifacts"
+   git push origin main
+   ```
+
+#### Alternative: One-Step Deployment Script
+
+Create a deployment script to automate the manual steps:
+
+```bash
+#!/bin/bash
+# deploy.sh - Manual deployment script
+
+set -e
+
+# Configuration
+DEPLOY_REPO="https://YOUR_TOKEN@github.com/davegoopot/beemanager-deploy.git"
+DEPLOY_DIR="/tmp/beemanager-deploy"
+
+echo "Building project..."
+uv build
+
+echo "Cloning/updating deployment repository..."
+if [ -d "$DEPLOY_DIR" ]; then
+  cd "$DEPLOY_DIR"
+  git pull origin main
+else
+  git clone "$DEPLOY_REPO" "$DEPLOY_DIR"
+  cd "$DEPLOY_DIR"
+fi
+
+echo "Copying build artifacts..."
+cp ../beemanager/dist/* .
+
+echo "Committing and pushing..."
+git add *.tar.gz *.whl
+git commit -m "Deploy beemanager build artifacts - $(date +%Y-%m-%d)"
+git push origin main
+
+echo "Deployment complete!"
+```
+
+**Usage:**
+1. Replace `YOUR_TOKEN` with your actual GitHub Personal Access Token
+2. Save as `deploy.sh` and make executable: `chmod +x deploy.sh`
+3. Run: `./deploy.sh`
+
 ### Deployment to Target Machine
 
 1. **Copy the distribution files** to your target machine (e.g., Raspberry Pi):
