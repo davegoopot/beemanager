@@ -123,3 +123,9 @@ To run the Django development server automatically on server reboot, you can set
 
 > The Django development server will now start automatically when the system boots and restart automatically if it crashes
 
+## Serving Over Tailscale
+
+```bash
+sudo tailscale serve --bg http://localhost:8335
+```
+
