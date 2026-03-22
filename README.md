@@ -78,3 +78,48 @@ access to the Pi.
 
 ## Running As a Linux Service
 
+To run the Django development server automatically on server reboot, you can set up a systemd service:
+
+1. Create a systemd service file:
+   ```bash
+   sudo tee /etc/systemd/system/serve.service > /dev/null << 'EOF'
+   [Unit]
+   Description=Django Development Server
+   After=network.target
+
+   [Service]
+   Type=simple
+   User=dave
+   WorkingDirectory=/home/dave/beemanager
+   ExecStart=/bin/bash /home/dave/beemanager/serve.bash
+   Restart=always
+   RestartSec=5s
+
+   [Install]
+   WantedBy=multi-user.target
+   EOF
+   ```
+
+2. Reload systemd to recognize the new service:
+   ```bash
+   sudo systemctl daemon-reload
+   ```
+
+3. Enable the service to start automatically on boot:
+   ```bash
+   sudo systemctl enable serve.service
+   ```
+
+4. Start the service immediately:
+   ```bash
+   sudo systemctl start serve.service
+   ```
+
+5. Verify the service is running:
+   ```bash
+   sudo systemctl is-active serve.service
+   sudo systemctl is-enabled serve.service
+   ```
+
+> The Django development server will now start automatically when the system boots and restart automatically if it crashes
+
